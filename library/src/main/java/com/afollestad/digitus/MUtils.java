@@ -48,6 +48,14 @@ class MUtils {
         return digitus.mFingerprintManager.isHardwareDetected() && digitus.mFingerprintManager.hasEnrolledFingerprints();
     }
 
+    public static boolean isFingerPrintAvailable(Digitus digitus){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;
+        int granted = ContextCompat.checkSelfPermission(digitus.mContext, Manifest.permission.USE_FINGERPRINT);
+        if (granted != PackageManager.PERMISSION_GRANTED) return false;
+        //noinspection ResourceType
+        return digitus.mFingerprintManager.isHardwareDetected();
+    }
+
     public static void initBase(Context context, DigitusBase digitus) {
         digitus.mKeyguardManager = context.getSystemService(KeyguardManager.class);
         digitus.mFingerprintManager = context.getSystemService(FingerprintManager.class);

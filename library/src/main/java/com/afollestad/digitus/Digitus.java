@@ -58,16 +58,16 @@ public class Digitus extends DigitusBase {
 
     private static void finishInit() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!mInstance.isFingerprintAuthAvailable()) {
+            if (!mInstance.isFingerprintAuthAvailable() && mInstance.isFingerprintAvailable()) {
+                mInstance.mCallback.onDigitusError(mInstance, DigitusErrorType.REGISTRATION_NEEDED,
+                        new Exception("No fingerprints are registered on this device."));
+            } else if (!mInstance.isFingerprintAuthAvailable()) {
                 mInstance.mCallback.onDigitusError(mInstance, DigitusErrorType.FINGERPRINTS_UNSUPPORTED,
                         new Exception("Fingerprint authentication is not available to this device."));
             } else if (mInstance.isFingerprintRegistered()) {
                 mInstance.mIsReady = true;
                 mInstance.recreateKey();
                 mInstance.mCallback.onDigitusReady(mInstance);
-            } else {
-                mInstance.mCallback.onDigitusError(mInstance, DigitusErrorType.REGISTRATION_NEEDED,
-                        new Exception("No fingerprints are registered on this device."));
             }
         } else {
             mInstance.mIsReady = true;
@@ -89,7 +89,10 @@ public class Digitus extends DigitusBase {
     @SuppressWarnings("ResourceType")
     @TargetApi(Build.VERSION_CODES.M)
     public boolean startListening() {
-        if (!isFingerprintAuthAvailable()) {
+        if (!mInstance.isFingerprintAuthAvailable() && mInstance.isFingerprintAvailable()) {
+            mCallback.onDigitusError(mInstance, DigitusErrorType.REGISTRATION_NEEDED, new Exception("No fingerprints are registered on this device."));
+            return false;
+        } else if (!isFingerprintAuthAvailable()) {
             // Fingerprints not supported on this device
             mCallback.onDigitusError(this, DigitusErrorType.FINGERPRINTS_UNSUPPORTED, new Exception("Fingerprint authentication is not available to this device."));
             return false;
@@ -131,5 +134,10 @@ public class Digitus extends DigitusBase {
     public boolean isFingerprintAuthAvailable() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 MUtils.isFingerprintAuthAvailable(this);
+    }
+
+    public boolean isFingerprintAvailable(){
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                MUtils.isFingerPrintAvailable(this);
     }
 }
