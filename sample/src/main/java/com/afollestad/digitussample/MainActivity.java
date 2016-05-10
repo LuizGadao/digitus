@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements DigitusCallback, 
     @Override
     protected void onResume() {
         super.onResume();
-        Digitus.init(this, getString(R.string.app_name), 69, this);
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -48,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements DigitusCallback, 
                 Digitus.get().startListening();
             }
         });
+        Digitus.init(this, getString(R.string.app_name), 69, this);
     }
 
     @Override
@@ -130,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements DigitusCallback, 
                 mButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mButton.setText(R.string.start_listening);
                         Digitus.get().openSecuritySettings();
                     }
                 });
